@@ -1,9 +1,10 @@
-from multiprocessing import Process, Queue, Lock
+import multiprocessing as mp
 from datetime import datetime as dt
 import requests
 import logging #TODO: not implemented yet!
 import random
 import os
+from pprint import pprint
 
 
 """
@@ -28,7 +29,7 @@ def task_producer(queue, lock, urls):
 
     # Place urls on the Queue
     for task in tasks:
-        time.sleep(random.randint(1, 3)) #This should be deleted for PROD.
+        time.sleep(random.randint(1, 10)) #This should be deleted for PROD.
         queue.put(task)
 
     with lock:
@@ -46,16 +47,25 @@ def task_consumer(queue, lock):
 
     # Run indefinitely
     while True:
-        time.sleep(random.randint(1, 5))
+        time.sleep(random.randint(1, 10))
         # If queue is empty - get() will wait until queue has tasks.
-        task = queue.get()
+        url_id, url = queue.get() # pops task tuple (id, url)
+
+        # fetch urls and return urlid, url, status code, url content
+        rid, rurl, rcode, rcont[0:15], None, e = url_get(url,url_id)
+        pprint({'URLID': rid,
+                'URL': url,
+                'STATUS': rcode,
+                'CONTENT_SAMPLE': rcont,
+                'ERROR': e
+                })
 
         with lock: #TODO: use decorator for these prints.
             print('Consumer {} got {}'.format(os.getpid(), task[0])) #task[0]=id
 
 
 if __name__ == '__main__':
-    multiprocessing.log_to_stderr(logging.DEBUG) #can change logging level
+    mp.log_to_stderr(logging.DEBUG) #can change logging level
 
     # OS backed random 6 digit int seed for creating url IDs, could have used hashes
     # List of urls, should be a queue dynamically appended by critters on PROD.
@@ -66,8 +76,8 @@ if __name__ == '__main__':
             ("https://github.com/", os.urandom(6))]
 
     # Create the Queue
-    queue = Queue()
-    lock = Lock()
+    queue = mp.Queue()
+    lock = mp.Lock()
 
     producers = []
     consumers = []
@@ -76,11 +86,11 @@ if __name__ == '__main__':
         # Creates our producer processes by passing the producer function and it's arguments
         # On PROD the task list will be dynamically appended and a preset number
         # of producers will keep taking from a URLSTOPARSE queue instead of a list
-        producers.append(Process(target=task_producer, args=(queue, lock, task)))
+        producers.append(mp.Process(target=task_producer, args=(queue, lock, task)))
 
     # Creates consumer processes
     for i in range(len(tasks) * 2):
-        p = Process(target=task_consumer, args=(queue, lock))
+        p = mp.Process(target=task_consumer, args=(queue, lock))
 
         # IMPORTANT! 'False' here will keep the process alive forever.
         p.daemon = True
