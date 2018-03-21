@@ -63,7 +63,7 @@ if __name__ == '__main__':
             ("https://www.hugoboss.com/ch/fr/boss-homme-collection-defile/", os.urandom(6)),
             ("http://www.microsoft.com", os.urandom(6)),
             ("https://www.python.org/", os.urandom(6)),
-            ("https://github.com", os.urandom(6))]
+            ("https://github.com/", os.urandom(6))]
 
     # Create the Queue
     queue = Queue()
