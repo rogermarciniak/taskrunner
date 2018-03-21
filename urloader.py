@@ -52,8 +52,8 @@ def task_consumer(queue, lock):
         url_id, url = queue.get() # pops task tuple (id, url)
 
         # fetch urls and return urlid, url, status code, url content
-        rid, rurl, rcode, rcont[0:15], None, e = url_get(url,url_id)
-        pprint({'URLID': rid,
+        rurlid, rurl, rcode, rcont[0:15], None, e = url_get(url,url_id)
+        pprint({'URLID': rurlid,
                 'URL': url,
                 'STATUS': rcode,
                 'CONTENT_SAMPLE': rcont,
