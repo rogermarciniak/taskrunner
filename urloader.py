@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # List of urls, should be a queue dynamically appended by critters on PROD.
     tasks = [("https://www.patek.com/en/retail-service/patek-philippe-salons#geneva", os.urandom(6)),
             ("https://www.hugoboss.com/ch/fr/boss-homme-collection-defile/", os.urandom(6)),
-            ("http://www.microsoft.com", os.urandom(6)),
+            ("http://www.microsoft.com/", os.urandom(6)),
             ("https://www.python.org/", os.urandom(6)),
             ("https://github.com/", os.urandom(6))]
 
